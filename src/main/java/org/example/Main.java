@@ -22,6 +22,9 @@ public class Main {
         FilesTxt f17 = new FilesTxt("dantzig42");
         FilesTxt f18 = new FilesTxt("att48");
 
-        f1.populateMatrix();
+        int[][] matrix = f1.populateMatrix();
+        f1.printMatrix(matrix);
+
+        f1.populationPaths(matrix);
     }
 }

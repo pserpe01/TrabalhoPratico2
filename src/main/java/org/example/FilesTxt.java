@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.util.*;
 
 public class FilesTxt {
     private String nomeFicheiro;
@@ -35,13 +35,13 @@ public class FilesTxt {
                 }
             }
 
-
+            /*
             for(int i = 0; i < rows; i++){
                 for(int j = 0; j < columns; j++){
                     System.out.print(matrix[i][j] + " ");
                 }
                 System.out.println();
-            }
+            }*/
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("O arquivo não foi encontrado");
@@ -73,4 +73,36 @@ public class FilesTxt {
 
         return first;
     }
+
+    public void printMatrix(int[][] matrix){
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix.length; j++){
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    private int randomGenerator(){
+        Random random = new Random();
+        int size = firstValue();
+
+        return random.nextInt(0, size);
+    }
+
+    public void populationPaths(int [][] matrix){
+        List<int[]> listOfPaths = new ArrayList<>();
+
+        for(int i = 0; i < firstValue(); i++){
+            int[] array = new int[firstValue()];
+            Arrays.fill(array, randomGenerator());
+            listOfPaths.add(array);
+        }
+
+        for(int[] array : listOfPaths) {
+            System.out.println(Arrays.toString(array));
+        }
+    }
+
+
 }
