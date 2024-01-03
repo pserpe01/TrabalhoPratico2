@@ -25,6 +25,7 @@ public class Main {
         int[][] matrix = f1.populateMatrix();
         f1.printMatrix(matrix);
 
+        System.out.println("\nCaminhos Gerados");
         f1.populationPaths(matrix);
     }
 }

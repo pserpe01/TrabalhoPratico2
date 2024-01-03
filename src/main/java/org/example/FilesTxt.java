@@ -1,5 +1,6 @@
 package org.example;
 
+import javax.naming.InterruptedNamingException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -87,7 +88,21 @@ public class FilesTxt {
         Random random = new Random();
         int size = firstValue();
 
-        return random.nextInt(0, size);
+        return random.nextInt(size + 1);
+    }
+
+    //Verifica se os valores gerados são iguais
+    private void fillArrayWithoutRepetitions(int[] array){
+        Set<Integer> uniqueValues = new HashSet<>();
+
+        for(int i = 0; i < array.length; i++){
+            int randomValue;
+            do {
+                randomValue = randomGenerator();
+            } while (!uniqueValues.add(randomValue));
+
+            array[i] = randomValue;
+        }
     }
 
     public void populationPaths(int [][] matrix){
@@ -95,7 +110,8 @@ public class FilesTxt {
 
         for(int i = 0; i < firstValue(); i++){
             int[] array = new int[firstValue()];
-            Arrays.fill(array, randomGenerator());
+            //Arrays.fill(array, randomGenerator());
+            fillArrayWithoutRepetitions(array);
             listOfPaths.add(array);
         }
 
