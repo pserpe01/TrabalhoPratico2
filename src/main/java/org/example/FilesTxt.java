@@ -156,7 +156,7 @@ public class FilesTxt {
             int fromNode = path[i];
             int toNode = path[(i + 1) % path.length];
 
-            System.out.println("fromNode: " + fromNode + ", toNode: " + toNode);
+            //System.out.println("fromNode: " + fromNode + ", toNode: " + toNode + ", Valor: " + matrix[fromNode][toNode]);
 
             // Adicione estas verificações
             if (fromNode < 0 || fromNode >= matrix.length || toNode < 0 || toNode >= matrix.length) {
@@ -166,8 +166,6 @@ public class FilesTxt {
 
             pathCost += matrix[fromNode][toNode];
         }
-
-        pathCost += matrix[path[path.length - 1]][path[0]];
 
         return pathCost;
     }
