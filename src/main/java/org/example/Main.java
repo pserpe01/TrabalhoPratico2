@@ -1,31 +1,36 @@
 package org.example;
 
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
 
-        FilesTxt f1 = new FilesTxt("ex5");
-        FilesTxt f2 = new FilesTxt("ex6");
-        FilesTxt f3 = new FilesTxt("ex7");
-        FilesTxt f4 = new FilesTxt("ex8");
-        FilesTxt f5 = new FilesTxt("ex9");
-        FilesTxt f6 = new FilesTxt("ex10");
-        FilesTxt f7 = new FilesTxt("sp11");
-        FilesTxt f8 = new FilesTxt("uk12");
-        FilesTxt f9 = new FilesTxt("ex13");
-        FilesTxt f10 = new FilesTxt("burma14");
-        FilesTxt f11 = new FilesTxt("lau15");
-        FilesTxt f12 = new FilesTxt("ulysses16");
-        FilesTxt f13 = new FilesTxt("gr17");
-        FilesTxt f14 = new FilesTxt("ulysses22");
-        FilesTxt f15 = new FilesTxt("gr24");
-        FilesTxt f16 = new FilesTxt("fri26");
-        FilesTxt f17 = new FilesTxt("dantzig42");
-        FilesTxt f18 = new FilesTxt("att48");
+        if(args.length < 5){
+            System.out.println("Uso: java -jar tps2.jar arquivo.txt 10 60 80 0.01");
+            System.exit(1);
+        }
 
-        int[][] matrix = f1.populateMatrix();
-        f1.printMatrix(matrix);
+        String arquivo = args[0];
+        int threads = Integer.parseInt(args[1]);
+        int segundos = Integer.parseInt(args[2]);
+        int populacaoCaminhos = Integer.parseInt(args[3]);
+        double mutacao = Double.parseDouble(args[4]);
 
-        System.out.println("\nCaminhos Gerados");
-        f1.populationPaths(matrix);
+        //Args inseridos
+        System.out.println("Ficheiro: " + arquivo);
+        System.out.println("Nº de Threads: " + threads);
+        System.out.println("Nº de Segundos: " + segundos);
+        System.out.println("Nº da População: " + populacaoCaminhos);
+        System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
+        System.out.println("\nMatrix do " + arquivo);
+
+        FilesTxt f1 = new FilesTxt(arquivo);
+
+        f1.populateMatrix();
+        f1.printMatrix();
+
+        System.out.println("\n\nCaminhos Gerados");
+        f1.populationPaths();
+        f1.choosePaths();
     }
 }

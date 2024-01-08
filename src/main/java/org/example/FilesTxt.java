@@ -11,17 +11,19 @@ import java.util.*;
 public class FilesTxt {
     private String nomeFicheiro;
     private String caminhoFicheiro;
+    private int[][] matrix;
+    private List<int[]> listOfPaths;
 
     public FilesTxt(String nomeFicheiro) {
         this.caminhoFicheiro = "..\\TrabalhoPratico2\\testes";
         this.nomeFicheiro = nomeFicheiro;
     }
 
-    public int[][] populateMatrix(){
-        int[][] matrix = new int[0][0];
+    public void populateMatrix(){
+        matrix = new int[0][0];
 
         try {
-            File file = new File(caminhoFicheiro + "\\" + nomeFicheiro + ".txt");
+            File file = new File(caminhoFicheiro + "\\" + nomeFicheiro);
             Scanner scanner = new Scanner(file);
 
             scanner.nextLine();
@@ -35,26 +37,17 @@ public class FilesTxt {
                     matrix[i][j] = scanner.nextInt();
                 }
             }
-
-            /*
-            for(int i = 0; i < rows; i++){
-                for(int j = 0; j < columns; j++){
-                    System.out.print(matrix[i][j] + " ");
-                }
-                System.out.println();
-            }*/
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("O arquivo não foi encontrado");
         }
-        return matrix;
     }
 
     private int firstValue(){
         int first = -1;
 
         try {
-            File file = new File(caminhoFicheiro + "\\" + nomeFicheiro + ".txt");
+            File file = new File(caminhoFicheiro + "\\" + nomeFicheiro);
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
 
@@ -75,12 +68,28 @@ public class FilesTxt {
         return first;
     }
 
-    public void printMatrix(int[][] matrix){
-        for(int i = 0; i < matrix.length; i++){
-            for(int j = 0; j < matrix.length; j++){
-                System.out.print(matrix[i][j] + " ");
+    public void printMatrix(){
+        underScore();
+        System.out.println();
+        for (int[] ints : matrix) {
+            System.out.print("|");
+            for (int j = 0; j < matrix.length; j++) {
+                System.out.print(ints[j] + " ");
             }
-            System.out.println();
+            System.out.println("|");
+        }
+        ifen();
+    }
+
+    private void underScore(){
+        for (int i = 0; i < (firstValue() * 3 - 1); i++){
+            System.out.print("_");
+        }
+    }
+
+    private void ifen(){
+        for (int i = 0; i < (firstValue() * 3 - 1); i++){
+            System.out.print("-");
         }
     }
 
@@ -94,23 +103,24 @@ public class FilesTxt {
     //Verifica se os valores gerados são iguais
     private void fillArrayWithoutRepetitions(int[] array){
         Set<Integer> uniqueValues = new HashSet<>();
+        int size = array.length;
 
-        for(int i = 0; i < array.length; i++){
+        for(int i = 0; i < size; i++){
             int randomValue;
             do {
                 randomValue = randomGenerator();
-            } while (!uniqueValues.add(randomValue));
+            } while (!uniqueValues.add(randomValue) || randomValue >= size);
 
             array[i] = randomValue;
+            uniqueValues.add(randomValue);
         }
     }
 
-    public void populationPaths(int [][] matrix){
-        List<int[]> listOfPaths = new ArrayList<>();
+    public void populationPaths(){
+        listOfPaths = new ArrayList<>();
 
         for(int i = 0; i < firstValue(); i++){
             int[] array = new int[firstValue()];
-            //Arrays.fill(array, randomGenerator());
             fillArrayWithoutRepetitions(array);
             listOfPaths.add(array);
         }
@@ -118,6 +128,48 @@ public class FilesTxt {
         for(int[] array : listOfPaths) {
             System.out.println(Arrays.toString(array));
         }
+    }
+
+    public void choosePaths(){
+        int[] bestPath1, bestPath2;
+        int bestTotal1, bestTotal2, tempCounter = 0;
+
+        if(listOfPaths == null){
+            System.out.println("A lista dos caminhos está vazia");
+            return;
+        }
+
+        int totalCost = 0;
+
+            for(int[] path : listOfPaths){
+                int pathCost = calculatePathCost(path);
+                totalCost += pathCost;
+
+                System.out.println("Custo do caminho " + Arrays.toString(path) + ": " + pathCost);
+            }
+    }
+
+    private int calculatePathCost(int[] path){
+        int pathCost = 0;
+
+        for (int i = 0; i < path.length; i++) {
+            int fromNode = path[i];
+            int toNode = path[(i + 1) % path.length];
+
+            System.out.println("fromNode: " + fromNode + ", toNode: " + toNode);
+
+            // Adicione estas verificações
+            if (fromNode < 0 || fromNode >= matrix.length || toNode < 0 || toNode >= matrix.length) {
+                System.out.println("Índices inválidos: " + fromNode + ", " + toNode);
+                break;  // Adiciona um break para interromper o loop quando ocorre um erro
+            }
+
+            pathCost += matrix[fromNode][toNode];
+        }
+
+        pathCost += matrix[path[path.length - 1]][path[0]];
+
+        return pathCost;
     }
 
 
