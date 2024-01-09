@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class FilesTxt {
+public class FilesTxt implements Comparable<FilesTxt>{
     private String nomeFicheiro;
     private String caminhoFicheiro;
     private int[][] matrix;
     private List<int[]> listOfPaths;
+    private List<int[]> bestPaths;
 
     public FilesTxt(String nomeFicheiro) {
         this.caminhoFicheiro = "..\\TrabalhoPratico2\\testes";
@@ -116,37 +117,49 @@ public class FilesTxt {
         }
     }
 
-    public void populationPaths(){
+    public void populationPaths(int totalPopulation){
         listOfPaths = new ArrayList<>();
 
-        for(int i = 0; i < firstValue(); i++){
-            int[] array = new int[firstValue()];
+        for(int i = 0; i < totalPopulation; i++){
+            int[] array = new int[totalPopulation];
             fillArrayWithoutRepetitions(array);
             listOfPaths.add(array);
         }
-
-        for(int[] array : listOfPaths) {
-            System.out.println(Arrays.toString(array));
-        }
     }
 
+    /*
+    private void sortListOfPaths(List<int[]> listOfPaths ){
+        List<int[]> aux = new ArrayList<>();
+        int costAux = 0;
+
+        for (int[] path : listOfPaths) {
+            int cost = calculatePathCost(path);
+        }
+    }*/
+
     public void choosePaths(){
-        int[] bestPath1, bestPath2;
-        int bestTotal1, bestTotal2, tempCounter = 0;
+        int bestTotal1 = 0, bestTotal2 = 0, pathCost;
 
         if(listOfPaths == null){
             System.out.println("A lista dos caminhos está vazia");
             return;
         }
 
-        int totalCost = 0;
+        for(int[] path : listOfPaths){
+            pathCost = calculatePathCost(path);
 
-            for(int[] path : listOfPaths){
-                int pathCost = calculatePathCost(path);
-                totalCost += pathCost;
+            System.out.println(Arrays.toString(path) + " Custo Total -> " + pathCost);
+        }
 
-                System.out.println("Custo do caminho " + Arrays.toString(path) + ": " + pathCost);
-            }
+        Collections.sort(listOfPaths, (path1, path2) -> Integer.compare(calculatePathCost(path1), calculatePathCost(path2)));
+        
+        listOfPaths.subList(2, listOfPaths.size()).clear();
+
+        for (int[] array : listOfPaths){
+            System.out.println(Arrays.toString(array) + ", Custo: " + calculatePathCost(array));
+        }
+
+
     }
 
     private int calculatePathCost(int[] path){
@@ -170,5 +183,8 @@ public class FilesTxt {
         return pathCost;
     }
 
-
+    @Override
+    public int compareTo(FilesTxt other){
+        return Integer.compare(this.calculatePathCost(this.listOfPaths.get(0)), other.calculatePathCost(other.listOfPaths.get(0)));
+    }
 }

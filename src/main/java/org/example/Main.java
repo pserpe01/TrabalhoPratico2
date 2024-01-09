@@ -13,14 +13,14 @@ public class Main {
         String arquivo = args[0];
         int threads = Integer.parseInt(args[1]);
         int segundos = Integer.parseInt(args[2]);
-        int populacaoCaminhos = Integer.parseInt(args[3]);
+        int populacaoTotal = Integer.parseInt(args[3]);
         double mutacao = Double.parseDouble(args[4]);
 
         //Args inseridos
         System.out.println("Ficheiro: " + arquivo);
         System.out.println("Nº de Threads: " + threads);
         System.out.println("Nº de Segundos: " + segundos);
-        System.out.println("Nº da População: " + populacaoCaminhos);
+        System.out.println("Nº da População: " + populacaoTotal);
         System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
         System.out.println("\nMatrix do " + arquivo);
 
@@ -30,7 +30,7 @@ public class Main {
         f1.printMatrix();
 
         System.out.println("\n\nCaminhos Gerados");
-        f1.populationPaths();
+        f1.populationPaths(populacaoTotal);
         f1.choosePaths();
     }
 }
