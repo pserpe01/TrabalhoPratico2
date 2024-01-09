@@ -24,13 +24,13 @@ public class Main {
         System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
         System.out.println("\nMatrix do " + arquivo);
 
-        FilesTxt f1 = new FilesTxt(arquivo);
+        StarterVersion f1 = new StarterVersion(arquivo);
 
         f1.populateMatrix();
         f1.printMatrix();
 
         System.out.println("\n\nCaminhos Gerados");
         f1.populationPaths(populacaoTotal);
-        f1.choosePaths();
+
     }
 }

@@ -1,25 +1,22 @@
 package org.example;
 
 import javax.naming.InterruptedNamingException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
-public class FilesTxt implements Comparable<FilesTxt>{
+public class StarterVersion {
     private String nomeFicheiro;
     private String caminhoFicheiro;
     private int[][] matrix;
-    private List<int[]> listOfPaths;
-    private List<int[]> bestPaths;
+    private List<PathAndCost> pathsList;
 
-    public FilesTxt(String nomeFicheiro) {
+    public StarterVersion(String nomeFicheiro) {
         this.caminhoFicheiro = "..\\TrabalhoPratico2\\testes";
         this.nomeFicheiro = nomeFicheiro;
     }
 
+    //Função que vai construir a matriz
     public void populateMatrix(){
         matrix = new int[0][0];
 
@@ -44,6 +41,7 @@ public class FilesTxt implements Comparable<FilesTxt>{
         }
     }
 
+    //Função para ir buscar o número referente ao tamanho da matriz
     private int firstValue(){
         int first = -1;
 
@@ -69,6 +67,7 @@ public class FilesTxt implements Comparable<FilesTxt>{
         return first;
     }
 
+    //Função para dar print da matriz
     public void printMatrix(){
         underScore();
         System.out.println();
@@ -82,18 +81,21 @@ public class FilesTxt implements Comparable<FilesTxt>{
         ifen();
     }
 
+    //Função para complementar o print da matriz
     private void underScore(){
         for (int i = 0; i < (firstValue() * 3 - 1); i++){
             System.out.print("_");
         }
     }
 
+    //Função para complementar o print da matriz
     private void ifen(){
         for (int i = 0; i < (firstValue() * 3 - 1); i++){
             System.out.print("-");
         }
     }
 
+    //Função que gera números random
     private int randomGenerator(){
         Random random = new Random();
         int size = firstValue();
@@ -118,48 +120,27 @@ public class FilesTxt implements Comparable<FilesTxt>{
     }
 
     public void populationPaths(int totalPopulation){
-        listOfPaths = new ArrayList<>();
+        pathsList = new ArrayList<>();
 
         for(int i = 0; i < totalPopulation; i++){
             int[] array = new int[totalPopulation];
             fillArrayWithoutRepetitions(array);
-            listOfPaths.add(array);
-        }
-    }
-
-    /*
-    private void sortListOfPaths(List<int[]> listOfPaths ){
-        List<int[]> aux = new ArrayList<>();
-        int costAux = 0;
-
-        for (int[] path : listOfPaths) {
-            int cost = calculatePathCost(path);
-        }
-    }*/
-
-    public void choosePaths(){
-        int bestTotal1 = 0, bestTotal2 = 0, pathCost;
-
-        if(listOfPaths == null){
-            System.out.println("A lista dos caminhos está vazia");
-            return;
+            PathAndCost obj = new PathAndCost(array, calculatePathCost(array));
+            pathsList.add(obj);
         }
 
-        for(int[] path : listOfPaths){
-            pathCost = calculatePathCost(path);
+        bestTwoPaths(pathsList);
 
-            System.out.println(Arrays.toString(path) + " Custo Total -> " + pathCost);
+        for (PathAndCost path : pathsList){
+            System.out.println(path.toString());
         }
 
-        Collections.sort(listOfPaths, (path1, path2) -> Integer.compare(calculatePathCost(path1), calculatePathCost(path2)));
-        
-        listOfPaths.subList(2, listOfPaths.size()).clear();
+        System.out.println("\nOs dois caminhos com menor custo");
 
-        for (int[] array : listOfPaths){
-            System.out.println(Arrays.toString(array) + ", Custo: " + calculatePathCost(array));
+        removeWorstPaths(pathsList);
+        for (PathAndCost path : pathsList){
+            System.out.println(path.toString());
         }
-
-
     }
 
     private int calculatePathCost(int[] path){
@@ -168,8 +149,6 @@ public class FilesTxt implements Comparable<FilesTxt>{
         for (int i = 0; i < path.length; i++) {
             int fromNode = path[i];
             int toNode = path[(i + 1) % path.length];
-
-            //System.out.println("fromNode: " + fromNode + ", toNode: " + toNode + ", Valor: " + matrix[fromNode][toNode]);
 
             // Adicione estas verificações
             if (fromNode < 0 || fromNode >= matrix.length || toNode < 0 || toNode >= matrix.length) {
@@ -183,8 +162,12 @@ public class FilesTxt implements Comparable<FilesTxt>{
         return pathCost;
     }
 
-    @Override
-    public int compareTo(FilesTxt other){
-        return Integer.compare(this.calculatePathCost(this.listOfPaths.get(0)), other.calculatePathCost(other.listOfPaths.get(0)));
+    //Esta função ordena os caminhos gerados
+    private void bestTwoPaths(List<PathAndCost> pathList){
+        pathList.sort(Comparator.comparingInt(PathAndCost::getCost));
+    }
+
+    private void removeWorstPaths(List<PathAndCost> pathList){
+        pathList.subList(2, pathList.size()).clear();
     }
 }
