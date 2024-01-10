@@ -91,14 +91,19 @@ public class Matrix {
             return;
         }
 
+        System.out.println("Matriz");
+        System.out.println("+---------------------------------------+");
+
         System.out.println();
-        for (int[] ints : matrix) {
-            System.out.print("|");
-            for (int j = 0; j < matrix.length; j++) {
-                System.out.print(ints[j] + " ");
+        for (int[] row : matrix) {
+            System.out.print("| ");
+            for (int value : row) {
+                System.out.printf("%4d ", value);
             }
             System.out.println("|");
         }
+
+        System.out.println("+---------------------------------------+");
     }
 
 

@@ -17,6 +17,10 @@ public class Population {
         this.size = matrix.getSize();
     }
 
+    public List<PathAndCost> getPathsList() {
+        return pathsList;
+    }
+
     //Função que gera números random
     private int randomGenerator(){
         Random random = new Random();
