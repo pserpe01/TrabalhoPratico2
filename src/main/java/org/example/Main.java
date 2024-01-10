@@ -32,5 +32,8 @@ public class Main {
         System.out.println("\n\nCaminhos Gerados");
         population.populationPaths(populacaoTotal);
 
+        NewResults a = new NewResults();
+        a.populateMatrix();
+
     }
 }
