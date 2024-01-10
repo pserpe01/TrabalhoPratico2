@@ -34,6 +34,8 @@ public class Main {
 
         PMXCrossover pmx = new PMXCrossover(population, matrix);
         pmx.pmxCrossover();
+        NewResults a = new NewResults();
+        a.populateMatrix();
 
     }
 }
