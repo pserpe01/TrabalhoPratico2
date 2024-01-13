@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class PMXCrossover {
+public class ADT {
     private int[] parent1;
     private int[] parent2;
     private int[] offSpring1;
@@ -12,7 +12,7 @@ public class PMXCrossover {
     private int n;
     private Population population;
 
-    public PMXCrossover(Population population, int n) {
+    public ADT(Population population, int n) {
         this.population = population;
         this.offSpring1 = new int[n];
         this.offSpring2 = new int[n];

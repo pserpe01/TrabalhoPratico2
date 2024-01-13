@@ -15,6 +15,7 @@ public class Population {
     public Population(Matrix matrix) {
         this.matrix = matrix;
         this.size = matrix.getSize();
+        this.pathsList = new ArrayList<>();
     }
 
     public List<PathAndCost> getPathsList() {
@@ -45,8 +46,6 @@ public class Population {
     }
 
     public void populationPaths(int totalPopulation){
-        pathsList = new ArrayList<>();
-
         for(int i = 0; i < totalPopulation; i++){
             int[] array = new int[size];
             fillArrayWithoutRepetitions(array);

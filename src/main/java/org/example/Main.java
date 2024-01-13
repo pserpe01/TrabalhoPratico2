@@ -32,10 +32,14 @@ public class Main {
         System.out.println("\n\nCaminhos Gerados");
         population.populationPaths(populacaoTotal);
 
+        /*System.out.println("\nPMX");
         PMXCrossover pmx = new PMXCrossover(population, matrix);
-        pmx.pmxCrossover();
+        pmx.pmxCrossover();*/
 
-        Extra extra = new Extra(18);
-        extra.generateProblem();
+        ADT fonix = new ADT(population, matrix.getSize());
+        fonix.pmxCrossover();
+
+        //Extra extra = new Extra(18);
+        //extra.generateProblem();
     }
 }

@@ -21,9 +21,9 @@ public class PathAndCost {
 
     @Override
     public String toString() {
-        return "PathAndCost{" +
-                "path=" + Arrays.toString(path) +
-                ", cost=" + cost +
-                '}';
+        return "PathAndCost{ " +
+                "path = " + Arrays.toString(path) +
+                ", cost = " + cost +
+                " }";
     }
 }

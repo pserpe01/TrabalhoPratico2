@@ -35,11 +35,11 @@ public class TestPMXCrossover {
             System.out.printf("%2d ",parent2[i]);
         System.out.println();
 
-        int cuttingPoint1 = rand.nextInt(n);
-        int cuttingPoint2 = rand.nextInt(n);
+        //int cuttingPoint1 = rand.nextInt(n);
+        //int cuttingPoint2 = rand.nextInt(n);
 
-        //int cuttingPoint1 = 3;
-        //int cuttingPoint2 = 5;
+        int cuttingPoint1 = 3;
+        int cuttingPoint2 = 5;
 
         while (cuttingPoint1 == cuttingPoint2) {
             cuttingPoint2 = rand.nextInt(n);
