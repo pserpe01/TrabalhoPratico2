@@ -54,16 +54,52 @@ public class Population {
         }
 
         bestTwoPaths(pathsList);
+        showList();
+    }
 
-        for (PathAndCost path : pathsList){
-            System.out.println(path.toString());
+    public void exchangeMutation(double mutationProbability) {
+        Random random = new Random();
+
+        for (int i = 0; i < 2; i++) {
+            PathAndCost originalPath = pathsList.get(i);
+
+            // Cria uma cópia do caminho original para não modificar o original
+            int[] originalArray = originalPath.getPath().clone();
+
+            // Cria um novo caminho mutado com base no original
+            int[] mutatedPath = createMutatedPath(originalArray, random, mutationProbability);
+
+            // Adiciona o novo caminho à lista
+            pathsList.add(new PathAndCost(mutatedPath, calculatePathCost(mutatedPath)));
         }
 
-        System.out.println("\nOs dois caminhos com menor custo");
+        removeTwoHighestCostPaths();
+        bestTwoPaths(pathsList);
+        showList();
+    }
 
-        removeWorstPaths(pathsList);
-        for (PathAndCost path : pathsList){
-            System.out.println(path.toString());
+    private int[] createMutatedPath(int[] path, Random random, double mutationProbability) {
+        if (random.nextDouble() <= mutationProbability) { // Verifica a probabilidade de mutação
+            int[] newPath = path.clone(); // Clona o caminho para não modificar o original
+
+            // Escolhe duas posições aleatórias no caminho
+            int position1 = random.nextInt(size);
+            int position2 = random.nextInt(size);
+
+            // Garante que as posições escolhidas são diferentes
+            while (position1 == position2) {
+                position2 = random.nextInt(size);
+            }
+
+            // Troca os elementos nas posições escolhidas
+            int temp = newPath[position1];
+            newPath[position1] = newPath[position2];
+            newPath[position2] = temp;
+
+            return newPath;
+        } else {
+            // Se não houver mutação, retorna o caminho original
+            return path.clone();
         }
     }
 
@@ -91,7 +127,27 @@ public class Population {
         pathList.sort(Comparator.comparingInt(PathAndCost::getCost));
     }
 
-    private void removeWorstPaths(List<PathAndCost> pathList){
-        pathList.subList(2, pathList.size()).clear();
+    private void removeTwoHighestCostPaths() {
+        PathAndCost highestCostPath1 = null;
+        PathAndCost highestCostPath2 = null;
+
+        for (PathAndCost path : pathsList) {
+            if (highestCostPath1 == null || path.getCost() > highestCostPath1.getCost()) {
+                highestCostPath2 = highestCostPath1;
+                highestCostPath1 = path;
+            } else if (highestCostPath2 == null || path.getCost() > highestCostPath2.getCost()) {
+                highestCostPath2 = path;
+            }
+        }
+
+        pathsList.remove(highestCostPath1);
+        pathsList.remove(highestCostPath2);
+    }
+
+
+    private void showList() {
+        for (PathAndCost path : pathsList){
+            System.out.println(path.toString());
+        }
     }
 }

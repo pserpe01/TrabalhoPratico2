@@ -19,6 +19,14 @@ public class PathAndCost {
         return cost;
     }
 
+    public void setPath(int[] path) {
+        this.path = path;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
     @Override
     public String toString() {
         return "PathAndCost{ " +
