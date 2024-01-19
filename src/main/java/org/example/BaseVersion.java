@@ -19,10 +19,15 @@ public class BaseVersion extends Thread {
 
     @Override
     public void run() {
-        bestPath = Math.min(bestPath, doJob(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao));
+        int threadBestPath = doJob(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
+
+        // Synchronize the update of bestPath to avoid race conditions
+        synchronized (this) {
+            bestPath = Math.min(bestPath, threadBestPath);
+        }
     }
 
-    static synchronized int doJob(String arquivo, int segundos, int populacaoTotal, double mutacao) {
+    static int doJob(String arquivo, int segundos, int populacaoTotal, double mutacao) {
         Matrix matrix = new Matrix(arquivo);
         matrix.printMatrix();
 
@@ -33,10 +38,14 @@ public class BaseVersion extends Thread {
         System.out.println("\nPMX");
         PMXCrossover pmx = new PMXCrossover(population, matrix.getSize());
 
-        for(int i = 0; i < segundos; i++) {
+        long startTime = System.currentTimeMillis();
+        long elapsedTime = 0;
+
+        while (elapsedTime < segundos * 1000L) { // Convert seconds to milliseconds
             pmx.pmxCrossover();
             System.out.println();
             population.exchangeMutation(mutacao);
+            elapsedTime = System.currentTimeMillis() - startTime;
         }
 
         List<PathAndCost> pathsList = population.getPathsList();

@@ -18,11 +18,15 @@ public class Population {
         this.pathsList = new ArrayList<>();
     }
 
+    public void mergePopulations(List<PathAndCost> otherPopulation) {
+        pathsList.addAll(otherPopulation);
+        bestTwoPaths(pathsList);
+        pathsList = pathsList.subList(0, size); // Mantém apenas os melhores caminhos
+    }
+
     public List<PathAndCost> getPathsList() {
         return pathsList;
     }
-
-
 
     //Função que gera números random
     private int randomGenerator(){
