@@ -51,6 +51,7 @@ public class BaseVersion extends Thread {
         }
 
         List<PathAndCost> pathsList = population.getPathsList();
+
         return new PathAndCost(pathsList.get(0).getPath(), pathsList.get(0).getCost()) ;
     }
 
