@@ -39,8 +39,6 @@ public class PMXCrossover {
 
         separatePopulation();
 
-        System.out.println();
-
         int cuttingPoint1 = rand.nextInt(n);
         int cuttingPoint2 = rand.nextInt(n);
 
@@ -66,8 +64,6 @@ public class PMXCrossover {
             replacement2[parent1[i]] = parent2[i];
         }
 
-        System.out.println();
-
         // fill in remaining slots with replacements
         for (i = 0; i < n; i++) {
             if ((i < cuttingPoint1) || (i > cuttingPoint2)) {
@@ -90,8 +86,5 @@ public class PMXCrossover {
                 this.offSpring2[i] = n2;
             }
         }
-
     }
-
-
 }

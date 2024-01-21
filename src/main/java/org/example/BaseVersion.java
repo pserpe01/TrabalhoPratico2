@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -19,31 +20,19 @@ public class BaseVersion extends Thread {
         this.bestCost = 99999;
     }
 
-    static int doJobCost(String arquivo, int segundos, int populacaoTotal, double mutacao) {
-        Matrix matrix = new Matrix(arquivo);
+    @Override
+    public void run() {
+        PathAndCost bestOne = doJobCost(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
 
-        Population population = new Population(matrix);
-        population.populationPaths(populacaoTotal);
-
-        PMXCrossover pmx = new PMXCrossover(population, matrix.getSize());
-
-        long startTime = System.currentTimeMillis();
-
-        long elapsedTime = 0;
-
-        while (elapsedTime < segundos * 1000L) { // Convert seconds to milliseconds
-            long elapsedSeconds = elapsedTime;
-            System.out.println("Elapsed Time: " + elapsedSeconds + " seconds");
-            pmx.pmxCrossover();
-            population.exchangeMutation(mutacao);
-            elapsedTime = System.currentTimeMillis() - startTime;
+        synchronized (this) {
+            this.bestCost = Math.min(bestCost, bestOne.getCost());
+            this.bestPath = bestOne.getPath();
         }
 
-        List<PathAndCost> pathsList = population.getPathsList();
-        return pathsList.get(0).getCost();
+        latch.countDown();
     }
 
-    static int[] doJobPath(String arquivo, int segundos, int populacaoTotal, double mutacao) {
+    static PathAndCost doJobCost(String arquivo, int segundos, int populacaoTotal, double mutacao) {
         Matrix matrix = new Matrix(arquivo);
 
         Population population = new Population(matrix);
@@ -54,17 +43,18 @@ public class BaseVersion extends Thread {
         long startTime = System.currentTimeMillis();
         long elapsedTime = 0;
 
-        while (elapsedTime < segundos * 1000L) { // Convert seconds to milliseconds
-            long elapsedSeconds = elapsedTime;
-            System.out.println("Elapsed Time: " + elapsedSeconds + " seconds");
+        while (elapsedTime < segundos * 1000L) {
+            System.out.println("Tempo: " + ((elapsedTime / 1000) + 1) + " seconds");
             pmx.pmxCrossover();
             population.exchangeMutation(mutacao);
             elapsedTime = System.currentTimeMillis() - startTime;
         }
 
         List<PathAndCost> pathsList = population.getPathsList();
-        return pathsList.get(0).getPath();
+        return new PathAndCost(pathsList.get(0).getPath(), pathsList.get(0).getCost()) ;
     }
+
+    private static CountDownLatch latch;
 
     public int getBestCost() {
         return bestCost;
@@ -73,10 +63,9 @@ public class BaseVersion extends Thread {
         return bestPath;
     }
 
-    private static CountDownLatch latch;
 
     public static void main(String[] args) {
-        if(args.length < 5){
+        if(args.length < 5) {
             System.out.println("Uso: java -jar tps2.jar arquivo.txt 10 60 80 0.01");
             System.exit(1);
         }
@@ -87,67 +76,26 @@ public class BaseVersion extends Thread {
         int populacaoTotal = Integer.parseInt(args[3]);
         double mutacao = Double.parseDouble(args[4]);
 
-        //Args inseridos
-        System.out.println("Ficheiro: " + arquivo);
-        System.out.println("Nº de Threads: " + Numerothreads);
-        System.out.println("Nº de Segundos: " + segundos);
-        System.out.println("Nº da População: " + populacaoTotal);
-        System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
-        System.out.println("\nMatrix do " + arquivo);
-
-        // Crie um CountDownLatch com o número de threads
+        BaseVersion threads = null;
         latch = new CountDownLatch(Numerothreads);
 
-        // Crie um array para armazenar as instâncias de threads
-        BaseVersion[] threads = new BaseVersion[Numerothreads];
-
-        // Create and start threads
         for (int i = 0; i < Numerothreads; i++) {
-            threads[i] = new BaseVersion(arquivo, segundos, populacaoTotal, mutacao);
-            threads[i].start();
+            threads = new BaseVersion(arquivo, segundos, populacaoTotal, mutacao);
+            threads.start();
         }
 
-        long startTime = System.currentTimeMillis();
-
-        // Aguarde até que todas as threads tenham concluído
         try {
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        int overallBestTotal = Integer.MAX_VALUE;
-        int[] overallBestPath = null;
-
-        for (int i = 0; i < threads.length; i++) {
-            overallBestTotal = Math.min(overallBestTotal, threads[i].getBestCost());
-            overallBestPath = threads[i].getBestPath();
-        }
-
-        long overallExecutionTime = System.currentTimeMillis() - startTime; // Calcula o tempo de execução total
-
-        System.out.println("\n\nFicheiro: " + arquivo);
+        System.out.println("\nFicheiro: " + arquivo);
         System.out.println("Nº de Threads: " + Numerothreads);
         System.out.println("Tempo de execução: " + segundos);
-        System.out.println("Melhor caminho: " + overallBestTotal);
+        System.out.println("Melhor caminho: " + threads.getBestCost());
         System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
-        System.out.println("Caminho: " + java.util.Arrays.toString(overallBestPath));
+        System.out.println("Caminho: " + Arrays.toString(threads.getBestPath()));
 
-    }
-
-    @Override
-    public void run() {
-
-        int threadBestCost = doJobCost(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
-        int[] threadBestPath = doJobPath(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
-
-        // Synchronize the update of bestPath to avoid race conditions
-        synchronized (this) {
-            bestCost = Math.min(bestCost, threadBestCost);
-            bestPath = threadBestPath;
-        }
-
-        // Sinalize que esta thread concluiu
-        latch.countDown();
     }
 }

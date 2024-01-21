@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class Population {
-
     private List<PathAndCost> pathsList;
     private Matrix matrix;
     private int size;
@@ -16,10 +15,6 @@ public class Population {
         this.matrix = matrix;
         this.size = matrix.getSize();
         this.pathsList = new ArrayList<>();
-    }
-
-    public List<PathAndCost> getPathsList() {
-        return pathsList;
     }
 
     //Função que gera números random
@@ -77,7 +72,8 @@ public class Population {
     }
 
     private int[] createMutatedPath(int[] path, Random random, double mutationProbability) {
-        if (random.nextDouble() <= mutationProbability) { // Verifica a probabilidade de mutação
+        // Verifica a probabilidade de mutação
+        if (random.nextDouble() <= mutationProbability) {
             int[] newPath = path.clone(); // Clona o caminho para não modificar o original
 
             // Escolhe duas posições aleatórias no caminho
@@ -95,13 +91,14 @@ public class Population {
             newPath[position2] = temp;
 
             return newPath;
-        } else {
+        }
+        else {
             // Se não houver mutação, retorna o caminho original
             return path.clone();
         }
     }
 
-    private int calculatePathCost(int[] path){
+    private int calculatePathCost(int[] path) {
         int pathCost = 0;
 
         for (int i = 0; i < path.length; i++) {
@@ -140,5 +137,9 @@ public class Population {
 
         pathsList.remove(highestCostPath1);
         pathsList.remove(highestCostPath2);
+    }
+
+    public List<PathAndCost> getPathsList() {
+        return pathsList;
     }
 }
