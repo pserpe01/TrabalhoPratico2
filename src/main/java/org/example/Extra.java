@@ -8,7 +8,8 @@ public class Extra {
     private int numberOfCities;
     private int seed;
 
-    public Extra(int seed) {
+    public Extra(int seed, int numberOfCities) {
+        this.numberOfCities = numberOfCities;
         this.seed = seed;
     }
 
@@ -16,32 +17,21 @@ public class Extra {
         return new Random(this.seed);
     }
 
-    private int generateNumberOfCities() {
-        Random random = initializeRandom();
-        int number;
-        boolean exists = false;
 
-        do {
-            number = random.nextInt(50 - 18) + 18;
 
-            for(int exclude : this.excludeNumbers) {
-                if(number == exclude) {
-                    exists = true;
-                    break;
-                }
-            }
-        }
-        while(!exists);
 
-        return number;
-    }
     
     public void generateProblem() {
-        this.numberOfCities = generateNumberOfCities();
+        for(int num : this.excludeNumbers){
+            if(this.numberOfCities == num){
+                System.out.println("Numero de cidades já existe.");
+                return;
+            }
+        }
 
         try {
             Random random = initializeRandom();
-            PrintWriter writer = new PrintWriter(new FileWriter("ex_gau" + this.numberOfCities + ".txt"));
+            PrintWriter writer = new PrintWriter(new FileWriter("..\\TrabalhoPratico2\\testes\\ex_gau" + this.numberOfCities + ".txt"));
 
             writer.println(this.numberOfCities);
 
@@ -80,4 +70,11 @@ public class Extra {
     private int nextGaussianInt(Random random, int media, int standardDeviation) {
         return (int) Math.round(random.nextGaussian() * standardDeviation + media);
     }
+
+    public static void main(String[] args) {
+        Extra extra = new Extra(18, 18);
+        extra.generateProblem();
+    }
 }
+
+

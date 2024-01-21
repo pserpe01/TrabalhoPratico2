@@ -1,49 +1,40 @@
 package org.example;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class BaseVersion extends Thread {
     private String arquivo;
     private int segundos;
     private int populacaoTotal;
     private double mutacao;
-    private int bestPath;
+    private int bestCost;
+    private int[] bestPath;
 
     public BaseVersion(String arquivo, int segundos, int populacaoTotal, double mutacao) {
         this.arquivo = arquivo;
         this.segundos = segundos;
         this.populacaoTotal = populacaoTotal;
         this.mutacao = mutacao;
-        this.bestPath = 99999;
+        this.bestCost = 99999;
     }
 
-    @Override
-    public void run() {
-        int threadBestPath = doJob(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
-
-        // Synchronize the update of bestPath to avoid race conditions
-        synchronized (this) {
-            bestPath = Math.min(bestPath, threadBestPath);
-        }
-    }
-
-    static int doJob(String arquivo, int segundos, int populacaoTotal, double mutacao) {
+    static int doJobCost(String arquivo, int segundos, int populacaoTotal, double mutacao) {
         Matrix matrix = new Matrix(arquivo);
-        matrix.printMatrix();
 
         Population population = new Population(matrix);
-        System.out.println("\n\nCaminhos Gerados");
         population.populationPaths(populacaoTotal);
 
-        System.out.println("\nPMX");
         PMXCrossover pmx = new PMXCrossover(population, matrix.getSize());
 
         long startTime = System.currentTimeMillis();
+
         long elapsedTime = 0;
 
         while (elapsedTime < segundos * 1000L) { // Convert seconds to milliseconds
+            long elapsedSeconds = elapsedTime;
+            System.out.println("Elapsed Time: " + elapsedSeconds + " seconds");
             pmx.pmxCrossover();
-            System.out.println();
             population.exchangeMutation(mutacao);
             elapsedTime = System.currentTimeMillis() - startTime;
         }
@@ -52,9 +43,37 @@ public class BaseVersion extends Thread {
         return pathsList.get(0).getCost();
     }
 
-    public int getBestPath() {
+    static int[] doJobPath(String arquivo, int segundos, int populacaoTotal, double mutacao) {
+        Matrix matrix = new Matrix(arquivo);
+
+        Population population = new Population(matrix);
+        population.populationPaths(populacaoTotal);
+
+        PMXCrossover pmx = new PMXCrossover(population, matrix.getSize());
+
+        long startTime = System.currentTimeMillis();
+        long elapsedTime = 0;
+
+        while (elapsedTime < segundos * 1000L) { // Convert seconds to milliseconds
+            long elapsedSeconds = elapsedTime;
+            System.out.println("Elapsed Time: " + elapsedSeconds + " seconds");
+            pmx.pmxCrossover();
+            population.exchangeMutation(mutacao);
+            elapsedTime = System.currentTimeMillis() - startTime;
+        }
+
+        List<PathAndCost> pathsList = population.getPathsList();
+        return pathsList.get(0).getPath();
+    }
+
+    public int getBestCost() {
+        return bestCost;
+    }
+    public int[] getBestPath() {
         return bestPath;
     }
+
+    private static CountDownLatch latch;
 
     public static void main(String[] args) {
         if(args.length < 5){
@@ -76,35 +95,59 @@ public class BaseVersion extends Thread {
         System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
         System.out.println("\nMatrix do " + arquivo);
 
-        // Create an array to store Main instances
-        BaseVersion[] threads = new BaseVersion[Integer.parseInt(args[1])];
+        // Crie um CountDownLatch com o número de threads
+        latch = new CountDownLatch(Numerothreads);
+
+        // Crie um array para armazenar as instâncias de threads
+        BaseVersion[] threads = new BaseVersion[Numerothreads];
 
         // Create and start threads
-        for (int i = 0; i < threads.length; i++) {
+        for (int i = 0; i < Numerothreads; i++) {
             threads[i] = new BaseVersion(arquivo, segundos, populacaoTotal, mutacao);
             threads[i].start();
         }
 
-        // Wait for all threads to complete
-        for (int i = 0; i < threads.length; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        long startTime = System.currentTimeMillis();
+
+        // Aguarde até que todas as threads tenham concluído
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        // Print the best path after all threads have completed
-        int overallBestPath = Integer.MAX_VALUE;
+        int overallBestTotal = Integer.MAX_VALUE;
+        int[] overallBestPath = null;
+
         for (int i = 0; i < threads.length; i++) {
-            overallBestPath = Math.min(overallBestPath, threads[i].getBestPath());
+            overallBestTotal = Math.min(overallBestTotal, threads[i].getBestCost());
+            overallBestPath = threads[i].getBestPath();
         }
 
-        System.out.println("\nMelhor caminho: " + overallBestPath);
+        long overallExecutionTime = System.currentTimeMillis() - startTime; // Calcula o tempo de execução total
 
+        System.out.println("\n\nFicheiro: " + arquivo);
+        System.out.println("Nº de Threads: " + Numerothreads);
+        System.out.println("Tempo de execução: " + segundos);
+        System.out.println("Melhor caminho: " + overallBestTotal);
+        System.out.println("Percentagem da chance de acontecer a mutação: " + mutacao);
+        System.out.println("Caminho: " + java.util.Arrays.toString(overallBestPath));
 
+    }
 
-        //Extra extra = new Extra(18);
-        //extra.generateProblem();
+    @Override
+    public void run() {
+
+        int threadBestCost = doJobCost(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
+        int[] threadBestPath = doJobPath(this.arquivo, this.segundos, this.populacaoTotal, this.mutacao);
+
+        // Synchronize the update of bestPath to avoid race conditions
+        synchronized (this) {
+            bestCost = Math.min(bestCost, threadBestCost);
+            bestPath = threadBestPath;
+        }
+
+        // Sinalize que esta thread concluiu
+        latch.countDown();
     }
 }

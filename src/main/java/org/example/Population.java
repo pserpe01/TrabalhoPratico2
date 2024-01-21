@@ -18,12 +18,6 @@ public class Population {
         this.pathsList = new ArrayList<>();
     }
 
-    public void mergePopulations(List<PathAndCost> otherPopulation) {
-        pathsList.addAll(otherPopulation);
-        bestTwoPaths(pathsList);
-        pathsList = pathsList.subList(0, size); // Mantém apenas os melhores caminhos
-    }
-
     public List<PathAndCost> getPathsList() {
         return pathsList;
     }
@@ -60,7 +54,6 @@ public class Population {
         }
 
         bestTwoPaths(pathsList);
-        showList();
     }
 
     public void exchangeMutation(double mutationProbability) {
@@ -81,7 +74,6 @@ public class Population {
 
         removeTwoHighestCostPaths();
         bestTwoPaths(pathsList);
-        showList();
     }
 
     private int[] createMutatedPath(int[] path, Random random, double mutationProbability) {
@@ -148,12 +140,5 @@ public class Population {
 
         pathsList.remove(highestCostPath1);
         pathsList.remove(highestCostPath2);
-    }
-
-
-    private void showList() {
-        for (PathAndCost path : pathsList){
-            System.out.println(path.toString());
-        }
     }
 }

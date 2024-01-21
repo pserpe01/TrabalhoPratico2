@@ -39,16 +39,6 @@ public class PMXCrossover {
 
         separatePopulation();
 
-        for (i = 0; i < n; i++) {
-            System.out.printf("%2d ",parent1[i]);
-        }
-
-        System.out.println();
-
-        for (i = 0; i < n; i++) {
-            System.out.printf("%2d ",parent2[i]);
-        }
-
         System.out.println();
 
         int cuttingPoint1 = rand.nextInt(n);
@@ -64,8 +54,6 @@ public class PMXCrossover {
             cuttingPoint2 = swap;
         }
 
-        System.out.printf("cp1 = %d cp2 = %d\n",cuttingPoint1,cuttingPoint2);
-
         for (i = 0; i < n + 1; i++) {
             replacement1[i] = -1;
             replacement2[i] = -1;
@@ -76,16 +64,6 @@ public class PMXCrossover {
             offSpring2[i] = parent1[i];
             replacement1[parent2[i]] = parent1[i];
             replacement2[parent1[i]] = parent2[i];
-        }
-
-        for (i = 0; i < n + 1; i++) {
-            System.out.printf("%2d ",replacement1[i]);
-        }
-
-        System.out.println();
-
-        for (i = 0; i < n + 1; i++) {
-            System.out.printf("%2d ",replacement2[i]);
         }
 
         System.out.println();
@@ -113,18 +91,7 @@ public class PMXCrossover {
             }
         }
 
-        printStuff(this.offSpring1, this.offSpring2);
     }
 
-    private void printStuff(int[] offSpring1, int[] offSpring2) {
-        for (int i=0; i< n; i++) {
-            System.out.printf("%2d ",offSpring1[i]);
-        }
 
-        System.out.println();
-
-        for (int i=0; i< n; i++) {
-            System.out.printf("%2d ",offSpring2[i]);
-        }
-    }
 }
