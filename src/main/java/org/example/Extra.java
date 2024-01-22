@@ -16,10 +16,6 @@ public class Extra {
     private Random initializeRandom() {
         return new Random(this.seed);
     }
-
-
-
-
     
     public void generateProblem() {
         for(int num : this.excludeNumbers){
@@ -38,8 +34,8 @@ public class Extra {
             //Geração de coordernadas
             int[][] coordenadas = new int[this.numberOfCities][2];
             for(int i = 0; i < this.numberOfCities; i++) {
-                coordenadas[i][0] = nextGaussianInt(random, 60, 30); //Coordenada x
-                coordenadas[i][1] = nextGaussianInt(random, 60, 30); //Coordenada y
+                coordenadas[i][0] = (int) random.nextGaussian(60, 30);
+                coordenadas[i][1] = (int) random.nextGaussian(60, 30);
             }
 
             //Cálculo da distância e preenchimento do ficheiro
@@ -65,10 +61,6 @@ public class Extra {
     
     private double calculateDistance(int x1, int y1, int x2, int y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    } 
-    
-    private int nextGaussianInt(Random random, int media, int standardDeviation) {
-        return (int) Math.round(random.nextGaussian() * standardDeviation + media);
     }
 
     public static void main(String[] args) {
